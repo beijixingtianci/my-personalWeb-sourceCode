@@ -7,21 +7,14 @@
     </div>
 </template>
 
-<script>
-export default{
-    name: 'NoticeFloating',
-    data(){
-        return{
-            visible: true,  // 每次组件加载时默认显示
-            message: '网站为个人练习，会不定期更新。\n如有bug或建议，请联系我'
-        }
-    },
+<script setup>
+import { ref } from 'vue'
 
-    methods:{
-        closeNotice(){
-            this.visible = false;          // 点击关闭，隐藏提示
-        }
-    }
+const visible = ref(true)
+const message = '网站为个人练习，会不定期更新。\n如有bug或建议，请联系我'
+
+function closeNotice() {
+  visible.value = false
 }
 </script>
 

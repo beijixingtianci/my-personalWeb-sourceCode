@@ -27,6 +27,27 @@
   </div>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+
+const isOpen = ref(false)
+const showQrModal = ref(false)
+
+function toggleMenu() {
+  isOpen.value = !isOpen.value
+}
+
+function openQrModal() {
+  showQrModal.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeQrModal() {
+  showQrModal.value = false
+  document.body.style.overflow = ''
+}
+</script>
+
 <style scoped>
 html, body {
   margin: 0;
@@ -194,27 +215,3 @@ a:hover {
   }
 }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      isOpen: false,
-      showQrModal: false
-    }
-  },
-  methods: {
-    toggleMenu() {
-      this.isOpen = !this.isOpen
-    },
-    openQrModal() {
-      this.showQrModal = true
-      document.body.style.overflow = 'hidden'
-    },
-    closeQrModal() {
-      this.showQrModal = false
-      document.body.style.overflow = ''
-    }
-  }
-}
-</script>

@@ -150,114 +150,109 @@
   </div>
 </template>
 
-<script>
-import NoticeFloating from '../components/NoticeFloating.vue';
-import axios from 'axios';
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import NoticeFloating from '../components/NoticeFloating.vue'
+import axios from 'axios'
 
-export default {
-  name: 'Union',
+const menuOpen = ref(false)
+const showContactModal = ref(false)
 
-  components: {
-    NoticeFloating
-  },
+// 问答数据
+const qaCategories = ref([])
+// 折叠状态用 reactive，因为 key 是动态的
+const expandedCategories = reactive({})
+const expandedQuestions = reactive({})
 
-  data() {
-    return {
-      menuOpen: false,    // 控制移动端菜单展开/收起
-      showContactModal: false,   // 定义一个布尔变量，控制弹窗显示或隐藏。
+// 常用链接（纯静态数据，不需要 ref）
+const allLinks = [
+  { name: '建国大学官网', url: 'http://www.konkuk.ac.kr/' },
+  { name: '포털 (登录学校门户网站)', url: 'https://portal.konkuk.ac.kr' },
+  { name: '选课网站', url: 'https://sugang.konkuk.ac.kr/' },
+  { name: '宿舍官网', url: 'https://kulhouse.konkuk.ac.kr/home/index_01.asp' },
+  { name: '国际处', url: 'https://ciss.konkuk.ac.kr/ciss/index.do' },
+  { name: '向国际处老师提问（记得登录）', url: 'https://ciss.konkuk.ac.kr/ciss/18314/subview.do' },
+  { name: '提交TOPIK成绩(用学校邮箱登录)', url: 'https://forms.office.com/pages/responsepage.aspx?id=DuIC_fMPBUyY4sp8FbUDGzB3LTUgGSZFq84WY6TW1ZhURVU4OFlFRFhIOVFGTEoyMkRXVTRPWkVKMS4u&route=shorturl' },
+  { name: '出入境官网', url: 'https://www.hikorea.go.kr/Main.pt' },
+  { name: '工科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2281/subview.do' },
+  { name: '理科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2275/subview.do' },
+  { name: '国际大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/19211/subview.do' },
+  { name: '文科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2266/subview.do' },
+  { name: '经营大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2299/subview.do' },
+]
 
-      // 问答数据将从数据库加载，初始为空数组
-      qaCategories: [],
-      // 记录每个分类是否展开（初始化全部折叠）
-      expandedCategories: {},
-      // 记录每个分类下每个问题是否展开（二维，初始全部折叠）
-      expandedQuestions: {},
+// ==================== 方法 ====================
 
-      // 常用链接数据 
-      allLinks: [
-        { name: '建国大学官网', url: 'http://www.konkuk.ac.kr/' },
-        { name: '포털 (登录学校门户网站)', url: 'https://portal.konkuk.ac.kr' },
-        { name: '选课网站', url: 'https://sugang.konkuk.ac.kr/' },
-        { name: '宿舍官网', url: 'https://kulhouse.konkuk.ac.kr/home/index_01.asp' },
-        { name: '国际处', url: 'https://ciss.konkuk.ac.kr/ciss/index.do' },
-        { name: '向国际处老师提问（记得登录）', url: 'https://ciss.konkuk.ac.kr/ciss/18314/subview.do' },
-        { name: '提交TOPIK成绩(用学校邮箱登录)', url: 'https://forms.office.com/pages/responsepage.aspx?id=DuIC_fMPBUyY4sp8FbUDGzB3LTUgGSZFq84WY6TW1ZhURVU4OFlFRFhIOVFGTEoyMkRXVTRPWkVKMS4u&route=shorturl' },
-        { name: '出入境官网', url: 'https://www.hikorea.go.kr/Main.pt' },
-        { name: '工科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2281/subview.do' },
-        { name: '理科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2275/subview.do' },
-        { name: '国际大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/19211/subview.do' },
-        { name: '文科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2266/subview.do' },
-        { name: '经营大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2299/subview.do' },
-      ]
-    }
-  },
-  async created() {
-    await this.fetchQAData();      // 1. 加载数据
-    this.initExpandState();        // 2. 初始化折叠状态（必须在数据加载后）
-  },
-  methods: {
-    async fetchQAData() {
-      try {
-        const response = await axios.get('https://my-personalweb-backend.onrender.com/api/qa');
-        const data = response.data;
-        const grouped = this.groupByCategory(data);
-        this.qaCategories = grouped;
-      } catch (err) {
-        console.error('加载问答数据失败:', err);
-        this.qaCategories = [];
-      }
-    },
-
-    groupByCategory(data) {
-      const map = new Map();
-      data.forEach(item => {
-        if (!map.has(item.category_id)) {
-          map.set(item.category_id, {
-            title: item.category_title,
-            questions: []
-          });
-        }
-        map.get(item.category_id).questions.push({
-          q: item.question,
-          a: item.answer
-        });
-      });
-      return Array.from(map.values());
-    },
-
-    initExpandState() {
-      // 直接赋值，不用 $set
-      this.qaCategories.forEach((_, idx) => {
-        this.expandedCategories[idx] = false;
-        this.expandedQuestions[idx] = {};
-        this.qaCategories[idx].questions.forEach((_, qidx) => {
-          this.expandedQuestions[idx][qidx] = false;
-        });
-      });
-    },
-    openContactModal() {
-      this.showContactModal = true;
-    },
-    closeContactModal() {
-      this.showContactModal = false;
-    },
-    scrollTo(sectionId) {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    },
-    toggleCategory(idx) {
-      this.expandedCategories[idx] = !this.expandedCategories[idx];
-    },
-    toggleQuestion(catIdx, qIdx) {
-      if (!this.expandedQuestions[catIdx]) {
-        this.expandedQuestions[catIdx] = {};
-      }
-      this.expandedQuestions[catIdx][qIdx] = !this.expandedQuestions[catIdx][qIdx];
-    }
+async function fetchQAData() {
+  try {
+    const response = await axios.get('https://my-personalweb-backend.onrender.com/api/qa')
+    const data = response.data
+    qaCategories.value = groupByCategory(data)
+  } catch (err) {
+    console.error('加载问答数据失败:', err)
+    qaCategories.value = []
   }
 }
+
+function groupByCategory(data) {
+  const map = new Map()
+  data.forEach(item => {
+    if (!map.has(item.category_id)) {
+      map.set(item.category_id, {
+        title: item.category_title,
+        questions: []
+      })
+    }
+    map.get(item.category_id).questions.push({
+      q: item.question,
+      a: item.answer
+    })
+  })
+  return Array.from(map.values())
+}
+
+function initExpandState() {
+  qaCategories.value.forEach((_, idx) => {
+    expandedCategories[idx] = false
+    expandedQuestions[idx] = {}
+    qaCategories.value[idx].questions.forEach((_, qidx) => {
+      expandedQuestions[idx][qidx] = false
+    })
+  })
+}
+
+function openContactModal() {
+  showContactModal.value = true
+}
+
+function closeContactModal() {
+  showContactModal.value = false
+}
+
+function scrollTo(sectionId) {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+function toggleCategory(idx) {
+  expandedCategories[idx] = !expandedCategories[idx]
+}
+
+function toggleQuestion(catIdx, qIdx) {
+  if (!expandedQuestions[catIdx]) {
+    expandedQuestions[catIdx] = {}
+  }
+  expandedQuestions[catIdx][qIdx] = !expandedQuestions[catIdx][qIdx]
+}
+
+// ==================== 生命周期 ====================
+// created → onMounted
+onMounted(async () => {
+  await fetchQAData()
+  initExpandState()
+})
 </script>
 
 <style scoped>

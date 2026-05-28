@@ -4,6 +4,7 @@ import Home from '../pages/Home.vue'
 import Projects from '../pages/Projects.vue'
 import Contact from '../pages/Contact.vue'
 import Union from '../pages/Union.vue'
+import NotFound from '../pages/NotFound.vue'
 
 const routes = [
   { path: '/', 
@@ -37,6 +38,10 @@ const routes = [
       title:'建国大学中国留学生学生会官网',
       icon: 'Union.jpg'
     }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: NotFound
   }
 ]
 
