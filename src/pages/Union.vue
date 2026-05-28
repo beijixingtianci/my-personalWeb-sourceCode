@@ -13,7 +13,7 @@
           <ul class="nav-links" :class="{ active: menuOpen }">
             <li><router-link to="/">作者首页</router-link></li>
             <li><a href="javascript:void(0)" @click.prevent="scrollTo('links')">链接区</a></li>
-            <li><a href="javascript:void(0)" @click.prevent="scrollTo('q&a')">常见问题</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('qa')">常见问题</a></li>
             <li><a href="javascript:void(0)" @click.prevent="scrollTo('about')">关于我们</a></li>
             <li><a href="javascript:void(0)" @click.prevent="scrollTo('events')">活动</a></li>
             <li><a href="javascript:void(0)" @click="openContactModal">联系我们</a></li>
@@ -51,7 +51,7 @@
     </section>
 
     <!-- 问答区域 -->
-    <section id="q&a" class="section qa-section">
+    <section id="qa" class="section qa-section">
       <div class="container">
         <h2 class="section-title">常见问答</h2>
         <div class="qa-categories">

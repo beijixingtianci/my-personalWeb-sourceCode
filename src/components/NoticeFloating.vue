@@ -1,7 +1,7 @@
 <template>
     <div v-if="visible" class="notice-fixed">
         <div class="notice-content">
-            <p v-html="message"></p>
+            <p>{{ message }}</p>
             <button class="notice-close" @click="closeNotice">×</button>
         </div>
     </div>
@@ -13,7 +13,7 @@ export default{
     data(){
         return{
             visible: true,  // 每次组件加载时默认显示
-            message: '网站为个人练习，会不定期更新。<br>如有bug或建议，请联系我'
+            message: '网站为个人练习，会不定期更新。\n如有bug或建议，请联系我'
         }
     },
 
@@ -49,6 +49,7 @@ export default{
 
 .notice-content p {
   margin: 0;
+  white-space: pre-line;  /* 保持换行格式 */
 }
 
 .notice-close {
