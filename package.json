@@ -1,0 +1,25 @@
+{
+  "name": "mypersonalpage",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "@supabase/supabase-js": "^2.105.4",
+    "@tsparticles/slim": "^4.0.5",
+    "@tsparticles/vue3": "^4.0.5",
+    "axios": "^1.16.1",
+    "tsparticles": "^4.0.5",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.5",
+    "vite": "^8.0.4"
+  }
+}

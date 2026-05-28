@@ -1,0 +1,93 @@
+<template>
+  <div class="home">
+    <div class="content">
+      <h1>终究平凡不平庸</h1>
+
+      <p class="subtitle">「在慢慢写代码，也在慢慢生活」</p>
+
+      <p class="desc">
+        暂时没啥特别的东西，就是想慢慢记录一些东西。<br />
+        有时候写代码，有时候只是随便想点什么。
+      </p>
+
+      <p class="link-title">链接区</p>
+
+      <div class="links">
+        <router-link to="/union" class="btn">
+          建国大学中国留学生学生会官网(不定时更新) →
+        </router-link>
+
+        <router-link to="/projects" class="btn">
+          看看我做的东西 →
+        </router-link>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+.home {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(#ffffff, #e0f2fe);
+}
+
+/* 内容整体 */
+.content {
+  text-align: center;
+  padding-top: 165px;
+}
+
+/* 标题 */
+h1 {
+  font-size: 42px;
+  color: #333;
+}
+
+/* 副标题 */
+.subtitle {
+  margin-top: 10px;
+  color: #666;
+}
+
+/* 描述 */
+.desc {
+  margin-top: 20px;
+  color: #555;
+  line-height: 1.8;
+}
+
+/* 链接标题 */
+.link-title {
+  margin-top: 50px;
+  color: #666;
+}
+
+/* 按钮 */
+.links {
+  margin-top: 30px;
+}
+
+.btn {
+  display: block;
+  max-width: 100%;
+  margin: 15px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 50px;
+  text-decoration: underline;
+  color: #333;
+  transition: 0.3s; /* 确保过渡平滑 */
+}
+
+.btn:hover {
+  color: rgb(17, 111, 81);
+  font-size: 18px;
+  background: #e2e8f0;
+  box-shadow: 0 12px 8px rgba(0, 0, 0, 0.1);  /* 轻微阴影 */
+  transform: translateY(-4px);  /* 向上移动一点 */
+}
+</style>
+
+
+<!-- 可以加个音乐， 动画效果， 头像 -->

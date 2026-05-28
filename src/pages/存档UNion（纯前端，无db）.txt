@@ -1,0 +1,1170 @@
+<template>
+  <div class="union-page">
+
+    <!-- 导航栏 -->
+    <header>
+      <div class="container">
+        <nav>
+          <div class="logo">
+            <img src="/images/logo.jpg" alt="学生会Logo">
+            <h1>建大中国留学生学生会</h1>
+          </div>
+
+          <ul class="nav-links" :class="{ active: menuOpen }">
+            <li><router-link to="/">作者首页</router-link></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('links')">链接区</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('q&a')">常见问题</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('about')">关于我们</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('events')">活动</a></li>
+            <li><a href="javascript:void(0)" @click="openContactModal">联系我们</a></li>
+          </ul>
+
+          <div class="hamburger" @click="menuOpen = !menuOpen">
+            <i class="fas fa-bars"></i>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <div class="container">
+          <h2>欢迎来到建国大学中国留学生学生会</h2>
+          <p>我们致力于为在海外求学的中国学生提供支持、服务和交流平台</p>
+          <a href="javascript:void(0)" @click="openContactModal" class="btn">加入我们</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 链接区（标签云版） -->
+    <section id="links" class="section links-tags-section">
+      <div class="container">
+        <h2 class="section-title">常用链接</h2>
+        <div class="tag-cloud">
+          <a v-for="link in allLinks" :key="link.url" :href="link.url" target="_blank" rel="noopener noreferrer" class="tag">
+            {{ link.name }} 
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 问答区域 -->
+    <section id="q&a" class="section qa-section">
+      <div class="container">
+        <h2 class="section-title">常见问答</h2>
+        <div class="qa-categories">
+          <!-- 循环每个分类 -->
+          <div v-for="(category, idx) in qaCategories" :key="idex" class="qa-category">
+            <!-- 分类标题，点击切换该分类的展开/收起 -->
+            <div class="category-header" @click="toggleCategory(idx)">
+              <h3>{{ category.title }}</h3>
+              <span class="toggle-icon">{{ expandedCategories[idx] ? '-' : '+' }}</span>
+            </div>
+            <!-- 分类内容，根据 expandedCategories[idx] 决定是否显示 -->
+            <div class="category-content" v-show="expandedCategories[idx]">
+              <!-- 循环该分类下的每个问题 -->
+              <div v-for="(item, qidx) in category.questions" :key="qidx" class="qa-item">
+                <!-- 问题行，点击切换该问题的展开/收起 -->
+                <div class="qa-question" @click="toggleQuestion(idx, qidx)">
+                  <strong>问: {{ item.q }}</strong>
+                  <span class="toggle-icon-small">{{ expandedQuestions[idx]?.[qidx] ? '-' : '+' }}</span>
+                </div>
+                <!-- 答案，根据 expandedQuestions[idx][qidx] 决定是否显示 -->
+                <div class="qa-answer" v-show="expandedQuestions[idx]?.[qidx]">
+                  <p>答: {{ item.a }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section id="about" class="section">
+      <div class="container">
+        <h2 class="section-title">关于我们</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <p>建国大学中国留学生学生会成立于2002年，是由在建国大学就读的中国留学生自发组织的非营利性学生团体。</p>
+            <p>我们的宗旨是服务中国留学生，促进文化交流，帮助同学们更好地适应海外学习生活。</p>
+          </div>
+          <div class="about-image">
+            <img src="/images/UnionStructure.jpg" alt="组织架构">
+            <p>在任会员</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 近期活动 -->
+    <section id="events" class="section">
+      <div class="container">
+        <h2 class="section-title">近期活动</h2>
+        <div class="events-grid">
+          <div class="event-card">
+            <img src="/images/newMemember.jpg" alt="迎新活动">
+            <h3>新生欢迎会</h3>
+
+            <p>2025.03</p>
+            <p>帮助新生快速适应校园生活</p>
+          </div>
+          <div class="event-card">
+            <img src="/images/middleTest.jpg" alt="期中应援">
+            <h3>期中应援</h3>
+            <p>2025.04</p>
+            <p>加油打气</p>
+          </div>
+          <div class="event-card">
+            <img src="/images/mid_autumn_festival.jpg" alt="中秋晚会">
+            <h3>中秋晚会</h3>
+            <p>2024.10</p>
+            <p>共庆中秋晚会</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2026 建国大学中国留学生学生会 Created by 北极星.天赐</p>
+        <a href="https://github.com/beijixingtianci/beijixingtianci.github.io">前往网页github</a>
+      </div>
+    </footer>
+
+    <!-- 微信二维码模态框 -->
+    <div v-if="showContactModal" class="modal-overlay" @click="closeContactModal">
+      <div class="modal-container" @click.stop>
+        <button class="modal-close" @click="closeContactModal">&times;</button>
+        <h3>联系我们</h3>
+        <p>扫描下方二维码添加微信（作者）</p>
+        <img src="/images/QR.png" alt="微信二维码" class="qr-code">
+        <p class="wechat-id">微信号：<strong>A14949420167</strong></p>
+        <p class="note">（请备注“姓名，学科，可进新生群”）</p>
+      </div>
+    </div>
+    <NoticeFloating />
+  </div>
+</template>
+
+<script>
+import NoticeFloating from '../components/NoticeFloating.vue';
+
+export default {
+  name: 'Union',
+
+  components:{
+    NoticeFloating
+  },
+
+  data() {
+    return {
+      menuOpen: false,    // 控制移动端菜单展开/收起
+      showContactModal: false,   // 定义一个布尔变量，控制弹窗显示或隐藏。
+
+      // 问答数据：分类数组，每个分类有标题和问题列表
+      qaCategories: [
+        {
+          title: '加入学生会',
+          questions: [
+            {
+              q: '如何加入学生会？',
+              a: '点击“联系我们”或本页的“加入我们”按钮，扫描微信二维码，备注“姓名+学科"，即可咨询入会事宜。'
+            },
+            {
+              q: '加入学生会需要面试吗？',
+              a: '通常需要简单面试，主要了解你的意向和特长，欢迎积极参与。'
+            },
+            {
+              q: '学生会招新时间？',
+              a: '每学期初开学（3月和9月）会发布招新公告，请关注公众号或群通知。'
+            }
+          ]
+        },
+        {
+          title: '生活类',
+          questions: [
+            {
+              q: '从学校到机场怎么过去？',
+              a: '可以选择接机，机场到学校大概300-400左右不等。 \n也可以选择机场大巴，6013号直达学校건대입구站下车，车费2W'
+            },
+            {
+              q: '学校打印店在哪？',
+              a: '学生会馆一楼有自助打印机，3号馆一楼便利店打印室， 产学馆二楼有打印室。'
+            },
+            {
+              q: '在学证明，成绩单在哪打印？',
+              a: '学生会馆一楼可以打印在学证明和成绩单。\n网上申请方法：학교홈페이지-학사안내-증명서발급-발급안내-인터넷발급신청。 \n 如果想要咨询证明书相关问题，联系邮箱：certificate@konkuk.ac.kr'
+            },
+            {
+              q: '学校教材在哪里买？',
+              a: '学校内21号建筑是书店可以购买,但目前工学馆书店搬迁了。'
+            },
+            {
+              q: '校服在哪里买?',
+              a: '学生会馆1楼有订购校服的地方'
+            },
+            {
+              q: '国际处的地址和领取学生证的位置',
+              a: '国际处学校内8号建筑法学院一楼，学生证现在要去学校的新韩银行办理'
+            },
+            {
+              q: '学生证的作用',
+              a: '带着学生证去合作商家会有打折优惠（要先去银行开通银行卡功能）'
+            },
+            {
+              q: '学校内哪里可以吃饭',
+              a: '栋宿舍楼下有食堂（平日没有午饭），旁边有饭店和咖啡店\n学生会馆一楼有食堂，图书馆负一层也有'
+            },
+            {
+              q: '如何办登陆证或者延期?',
+              a: '每学期开学学校会有团体办理，可以关注一下学联公众号，也可以自己去出入境管理处办理（梧木桥站）'
+            },
+            {
+              q: '怎么申请标准入学许可书?',
+              a: '（发放标准入学许可书最多需要7天）至缴纳学费和选课时间截止申请'
+            },
+            {
+              q: '如何复学?',
+              a: '复学：포탈-학사행정-학적-학적변동관리-복학신청/취소–복학신청（至学费缴纳期间及选课期间为止）'
+            },
+            {
+              q: '如何退学?',
+              a: '休学不能只发休学申请给国际处，要自己在网址申请\n休学步骤：포탈-학사행정-학교생활-휴학'
+            },
+            {
+              q: '如何购买保险?',
+              a: '国民健康保险是办完登陆证后自动加入的，只需要每个月定期缴纳保险费。 \n学校保险购买（目前非强制）：http://n.foreignerdb.com/konkuk1'
+            },
+            {
+              q: '如何申请奖学金?',
+              a: '目前奖学金自动减免学费，不单独发放，除了topik奖学金\n具体要求和流程可以咨询学生会或国际处。'
+            },
+            {
+              q: '如何领取学士服?',
+              a: '联系系办公室进行咨询，学科办公室的邮箱地址在안내게시판最上面的생활 안내 책자的末尾显示各学科的邮箱地址。'
+            },
+            {
+              q: '因为在国外而拿不到毕业证?',
+              a: '正式毕业证（学位证）只在毕业典礼上发放。\n外国人学生中心不能代替邮寄毕业证。根据学科不同，可以通过朋友在学科办公室代收后进行邮寄'
+            },
+            {
+              q: '怎么办理打工证?',
+              a: '官网左边的학교생활菜单→去시간제 취업菜单查看大致内。\n在左边的자주사용하는양식中填写시간제 취업추천서后访问外国人学生中心。'
+            },
+            {
+              q: '如何申请住宿?',
+              a: '学校提供两种住宿选择：校内宿舍和校外租房。校内宿舍申请时间通常在每学期初，具体要求和流程可以咨询学生会或国际处。\n校外租房建议提前了解当地租房市场，注意合同条款和安全问题。'
+            },
+            {
+              q: '如何交学费?',
+              a: '网址：http://kupis.konkuk.ac.kr/ipsi/anundw/dmpp/index_pass_gen2.jsp \n会费可交可不交，是自愿缴纳的项目，不交的话，无法参加系内举办的各项活动。'
+            },
+            {
+              q: '怎么远程向国际处老师提问?',
+              a: '现在国际处不接受邮件\n如果需要提问在官网：http://www.konkuk.ac.kr/Administration/abroadCenter/jsp/School_life/Q&A.jsp \n这里登录后进行提问,再Q$A里面。'
+            }
+          ]
+        },
+        {
+          title:'宿舍类',
+          questions: [
+            {
+              q:'宿舍网址在哪？',
+              a:'上方链接区有'
+            },
+            {
+              q:'宿舍行政室邮箱？',
+              a:'kulhouse5003@gmail.com/ kulhouse5000@gmail.com 两个邮箱都可以'
+            },
+            {
+              q:'宿舍电话行政室电话？',
+              a:'02-2024-5000~5003'
+            },
+            {
+              q:'宿舍申请时间？',
+              a:'一般是7月和1月左右，随时关注邮箱'
+            },
+            {
+              q:'宿舍行政室工作时间?',
+              a:'周一至周五9:00-17:30（公休日放假）'
+            },
+            {
+              q:'宿舍门禁？',
+              a:'晚上1点'
+            },
+            {
+              q:'宿舍快递地址？',
+              a:'서올시 광진구 건국대학교+宿舍楼名字+房间号'
+            },
+            {
+              q:'宿舍入住流程？',
+              a:'行政室去办理入住，出示护照和肺结核直接领取房卡，周末不上班'
+            },
+            {
+              q:'宿舍健身房怎么申请？',
+              a:'每个月第三个星期一，每个月1万，在글로벌홀 지하 1층申请'
+            }
+          ]
+        },
+        {
+          title:'学习类',
+          questions:[
+            {
+              q:'在哪里抢课？',
+              a:'网页版去上面链接区 \n手机版去APP里搜索 건국대학교 수강신청'
+            },
+            {
+              q:'如何注册포탈账户？',
+              a:'新生要国际处发了学号之后才能注册，注册一天后才能登录'
+            },
+            {
+              q:'포탈忘记ID和密码怎么找回',
+              a:'비밀번호 문제 행정실 -> kuinfo@konkuk.ac.kr'
+            },
+            {
+              q:'宿舍入住流程？',
+              a:'行政室去办理入住，出示护照和肺结核直接领取房卡，周末不上班'
+            },
+            {
+              q:'如何选课？',
+              a:'电脑版点击수간신청→输入抢课编号→조회 /n手机版登录→수강신청→输入课号→신청。 B站搜建大学联官号也有视频教程'
+            },
+            {
+              q:'学科分类对应的中文？',
+              a:'전필-专业必修，전선-专业选择，선교-选择教养 /n지교-指定教养, 일선-一般选择，기교-基础教养 /n취득학점조회-取得学分查询，수강바구니-选课篮子，수강신청-选课申请 /m수강신청 조회-选课结果查询，폐강교과목안내-废止课目查询'
+            },
+            {
+              q:'外国人教养课应该怎么选？',
+              a:'기교修满12分，심교修满12分（심교的三个领域必须每个修2门）,지교15分,전선每个专业所需分数不一样'
+            },
+            {
+              q:'最低学分标准?',
+              a:'最低修12分（12分不能参与奖学金）15分以上包括15分可以参与奖学金 \n最多17-19分(根据专业不同每学期可修学分也不一样)。\n如果本学期的分数没有修够，剩余的分数移到下学期（最多3分）。'
+            },
+            {
+              q:'课程评分标准？',
+              a:'绝对评价：95-100A+，90-95A，85-90B+ \n80-85B，75-80C+，70-75C \n65-70D+，60-65D，60以下F \n相对评价：排名前50%为A '
+            },
+            {
+              q:'如何删课？',
+              a:'每学期期末左右会有具体的删课通知 \n大三才能删课（只能删C-,D和F的课程）'
+            },
+          ]
+        }
+      ],
+
+      // 记录每个分类是否展开（初始化全部折叠）
+      expandedCategories: {},
+      // 记录每个分类下每个问题是否展开（二维，初始全部折叠）
+      expandedQuestions: {},
+
+      // 常用链接数据 
+      allLinks:[
+        {name: '建国大学官网', url: 'http://www.konkuk.ac.kr/'},
+        {name: '포털 (登录学校门户网站)', url: 'https://portal.konkuk.ac.kr' },
+        {name: '选课网站', url: 'https://sugang.konkuk.ac.kr/' },
+        {name: '宿舍官网', url: 'https://kulhouse.konkuk.ac.kr/home/index_01.asp' },
+        {name: '国际处', url: 'https://ciss.konkuk.ac.kr/ciss/index.do'},
+        {name: '向国际处老师提问（记得登录）', url: 'https://ciss.konkuk.ac.kr/ciss/18314/subview.do' },
+        {name: '提交TOPIK成绩(用学校邮箱登录)', url: 'https://forms.office.com/pages/responsepage.aspx?id=DuIC_fMPBUyY4sp8FbUDGzB3LTUgGSZFq84WY6TW1ZhURVU4OFlFRFhIOVFGTEoyMkRXVTRPWkVKMS4u&route=shorturl'},
+        {name: '出入境官网', url: 'https://www.hikorea.go.kr/Main.pt' },    
+        {name: '工科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2281/subview.do' },    
+        {name: '理科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2275/subview.do' },
+        {name: '国际大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/19211/subview.do' },
+        {name: '文科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2266/subview.do' },
+        {name: '经营大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2299/subview.do' },
+      ]
+    }
+  },
+
+  created() {
+    this.qaCategories.forEach((_, idx) => {
+      this.expandedCategories[idx] = false; // 初始化分类折叠状态
+      this.expandedQuestions[idx] = {};
+
+      this.qaCategories[idx].questions.forEach((_, qidx) => {
+        this.expandedQuestions[idx][qidx] = false; // 初始化问题折叠状态
+      });
+    });
+  },
+
+  methods: {
+    openContactModal() {
+      this.showContactModal = true;
+    },
+
+    closeContactModal() {
+      this.showContactModal = false;
+    },
+
+    scrollTo(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    },
+
+    toggleCategory(idx) {
+      // 切换分类的展开/收起
+      this.expandedCategories[idx] = !this.expandedCategories[idx];
+    },
+
+    toggleQuestion(catIdx, qIdx) {
+      // 确保该分类下的问题状态对象存在
+      if (!this.expandedQuestions[catIdx]) {
+        this.$set(this.expandedQuestions, catIdx, {});
+      }
+
+      // 切换该问题的展开/收起
+      this.expandedQuestions[catIdx][qIdx] = !this.expandedQuestions[catIdx][qIdx];
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* scoped 让样式只作用于当前组件 */
+@import '@fortawesome/fontawesome-free/css/all.css';
+
+/* 全局样式 - 将 body 替换为 .union-page */
+.union-page {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.union-page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.btn {
+  display: inline-block;
+  background: #f1c40f;
+  color: #333;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #e67e22;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: #e74c3c;
+  margin: 1rem auto;
+}
+
+/* 导航栏 */
+header {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 0;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 80px;
+  margin-right: 15px;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 2rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #f1c40f;
+}
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.hero {
+  background: url('/images/logo.jpg') center/cover no-repeat;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.hero h2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+/* 链接区 - 标签云样式 */
+.links-tags-section {
+  background: #f5f5f5;
+}
+
+.tag-cloud {
+  display: flex;  /*弹性布局：横向排列, 自动排版*/
+  flex-wrap: wrap;  /*允许换行*/
+  gap: 12px 20px;   /*标签之间的间距*/
+  justify-content: center;  /*居中对齐*/
+  align-items: baseline;  /*标签基线对齐，保持视觉整齐*/
+  max-width: 1000px;
+  margin: 0 auto;  /*水平居中容器*/
+}
+
+.tag {
+  background: white;
+  padding: 5px 14px;
+  border-radius: 30px;
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+  display: inline-block;  /*强制在同一行显示 让 <a>：可以设置 padding*/
+  white-space: nowrap;  /*防止标签文本换行，保持标签完整显示*/
+}
+
+.tag:hover {
+  background: #e74c3c;
+  color: white;
+  transform: scale(1.2);  /*放大效果*/
+  border-color: #e74c3c;
+}
+
+@media (max-width: 640px) {
+  .tag {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    white-space: normal;  /*允许标签文本换行，适应小屏幕*/
+  }
+
+  .tag-cloud {
+    gap: 10px 14px;
+  }
+}
+
+/* 问答区域样式 */
+.qa-section {
+  background: #f5f5f5;
+  /* 与页面背景保持一致 */
+}
+
+.qa-categories {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.qa-category {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: white;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.category-header:hover {
+  background: #fef6f2;
+}
+
+.category-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.category-content {
+  padding: 0.2rem 1rem 0.8rem;
+}
+
+.qa-item {
+  margin: 0.8rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.qa-item:last-child {
+  border-bottom: none;
+}
+
+.qa-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.8rem 0.5rem;
+}
+
+.qa-question:hover {
+  background: #fafafa;
+}
+
+.qa-question strong {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.toggle-icon-small {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-left: 1rem;
+}
+
+.qa-answer {
+  padding: 0.2rem 0.5rem 1rem 1.5rem;
+  color: #555;
+  line-height: 1.6;
+  border-left: 2px solid #f1c40f;
+  margin: 0.2rem 0 0.5rem;
+  white-space: pre-wrap;
+  /* 保持文本格式，支持多行显示 */
+}
+
+.qa-answer p {
+  margin: 0;
+}
+
+
+/* 关于我们 */
+.about-content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-text p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.about-image {
+  flex: 1;
+  max-width: 300px;
+}
+
+.about-image img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: block;
+  /* 确保块级，垂直排列 */
+  margin-bottom: 1rem;
+  /* 图片之间间隔 */
+}
+
+.about-image p {
+  text-align: center;
+}
+
+/* 活动部分 */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.event-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-10px);
+}
+
+.event-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.event-card h3 {
+  padding: 1rem;
+  color: #2c3e50;
+}
+
+.event-card p {
+  padding: 0 1rem 1rem;
+  color: #7f8c8d;
+}
+
+/* 服务部分（保留原样，以备后用） */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.service-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+}
+
+.service-card i {
+  font-size: 3rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.service-card h3 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+/* 联系我们（保留原样） */
+.contact-content {
+  display: flex;
+  gap: 3rem;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-info h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.contact-info p {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.contact-info i {
+  margin-right: 1rem;
+  color: #e74c3c;
+}
+
+.social-media {
+  margin-top: 2rem;
+}
+
+.social-media a {
+  display: inline-block;
+  margin-right: 1rem;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.social-media a:hover {
+  color: #e74c3c;
+}
+
+.contact-form {
+  flex: 1;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.contact-form textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+/* 页脚 */
+.union-page footer {
+  background: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+footer p {
+  font-size: 20px;
+}
+
+footer a{
+  color: #f1c40f;
+  font-weight: bold;
+}
+
+footer a:hover{
+  color: #e67e22;
+}
+
+/* 模态框遮罩层 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 模态框内容容器 */
+.modal-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.3s ease;
+  /* 弹窗出现时的淡入+上移动画，让体验更平滑 */
+}
+
+/* 关闭按钮 绝对定位在卡片右上角 */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #e74c3c;
+}
+
+/* 二维码图片 */
+.qr-code {
+  max-width: 400px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  margin: 1rem auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+  /* 保证图片完整显示不变形 */
+}
+
+/* 微信号文字 */
+.wechat-id {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.note {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-top: 0.5rem;
+}
+
+/* 淡入动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  nav {
+    position: relative;
+  }
+
+  /* 菜单：从右侧滑出，紧贴导航栏底部 */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    /* 紧贴 nav 底部 */
+    right: 0;
+    width: 220px;
+    background: #c0392b;
+    flex-direction: column;
+    padding: 0.5rem 0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 0 0 12px 12px;
+    z-index: 99;
+    list-style: none;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-links li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 14px 24px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .nav-links a:last-child {
+    border-bottom: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+   /* 英雄区缩小高度 */
+  .hero {
+    height: 360px;
+  }
+
+  .hero h2 {
+    font-size: 2rem;
+    padding: 0 10px;
+  }
+
+   .hero p {
+    font-size: 1rem;
+  }
+
+  /* 各区块减少内边距 */
+  .section {
+    padding: 3rem 0;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* 关于我们纵向堆叠，图片居中 */
+  .about-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-image {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+   /* 活动卡片更灵活的网格 */
+  .events-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* 页脚文字缩小 */
+  .union-page footer p {
+    font-size: 16px;
+  }
+
+  /* 弹窗优化 */
+  .modal-container {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .qr-code {
+    max-width: 100%;
+    max-height: 300px;
+  }
+}
+
+/* ========== 小手机进一步优化 (≤480px) ========== */
+@media (max-width: 480px) {
+  .hero {
+    height: 300px;
+  }
+
+  .hero h2 {
+    font-size: 1.75rem;
+  }
+
+  .hero p {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    padding: 0.7rem 1.8rem;
+    font-size: 0.95rem;
+  }
+
+  /* 问答触摸优化 */
+  .category-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .category-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .qa-question {
+    padding: 0.9rem 0.5rem;
+  }
+
+  .qa-question strong {
+    font-size: 0.95rem;
+  }
+
+  /* 活动卡片强制单列，更稳 */
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-card img {
+    height: 180px;
+  }
+
+  /* 关于我们图片再缩小一点 */
+  .about-image {
+    max-width: 240px;
+  }
+
+  .about-text p {
+    font-size: 0.95rem;
+  }
+
+  /* 弹窗宽度更灵活 */
+  .modal-container {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
+
+</style>

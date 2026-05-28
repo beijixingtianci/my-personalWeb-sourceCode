@@ -1,0 +1,1014 @@
+<template>
+  <div class="union-page">
+
+    <!-- 导航栏 -->
+    <header>
+      <div class="container">
+        <nav>
+          <div class="logo">
+            <img src="/images/logo.jpg" alt="学生会Logo">
+            <h1>建大中国留学生学生会</h1>
+          </div>
+
+          <ul class="nav-links" :class="{ active: menuOpen }">
+            <li><router-link to="/">作者首页</router-link></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('links')">链接区</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('q&a')">常见问题</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('about')">关于我们</a></li>
+            <li><a href="javascript:void(0)" @click.prevent="scrollTo('events')">活动</a></li>
+            <li><a href="javascript:void(0)" @click="openContactModal">联系我们</a></li>
+          </ul>
+
+          <div class="hamburger" @click="menuOpen = !menuOpen">
+            <i class="fas fa-bars"></i>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <div class="container">
+          <h2>欢迎来到建国大学中国留学生学生会</h2>
+          <p>我们致力于为在海外求学的中国学生提供支持、服务和交流平台</p>
+          <a href="javascript:void(0)" @click="openContactModal" class="btn">加入我们</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 链接区（标签云版） -->
+    <section id="links" class="section links-tags-section">
+      <div class="container">
+        <h2 class="section-title">常用链接</h2>
+        <div class="tag-cloud">
+          <a v-for="link in allLinks" :key="link.url" :href="link.url" target="_blank" rel="noopener noreferrer"
+            class="tag">
+            {{ link.name }}
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 问答区域 -->
+    <section id="q&a" class="section qa-section">
+      <div class="container">
+        <h2 class="section-title">常见问答</h2>
+        <div class="qa-categories">
+          <!-- 循环每个分类 -->
+          <div v-for="(category, idx) in qaCategories" :key="idx" class="qa-category">
+            <!-- 分类标题，点击切换该分类的展开/收起 -->
+            <div class="category-header" @click="toggleCategory(idx)">
+              <h3>{{ category.title }}</h3>
+              <span class="toggle-icon">{{ expandedCategories[idx] ? '-' : '+' }}</span>
+            </div>
+            <!-- 分类内容，根据 expandedCategories[idx] 决定是否显示 -->
+            <div class="category-content" v-show="expandedCategories[idx]">
+              <!-- 循环该分类下的每个问题 -->
+              <div v-for="(item, qidx) in category.questions" :key="qidx" class="qa-item">
+                <!-- 问题行，点击切换该问题的展开/收起 -->
+                <div class="qa-question" @click="toggleQuestion(idx, qidx)">
+                  <strong>问: {{ item.q }}</strong>
+                  <span class="toggle-icon-small">{{ expandedQuestions[idx]?.[qidx] ? '-' : '+' }}</span>
+                </div>
+                <!-- 答案，根据 expandedQuestions[idx][qidx] 决定是否显示 -->
+                <div class="qa-answer" v-show="expandedQuestions[idx]?.[qidx]">
+                  <p>答: {{ item.a }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section id="about" class="section">
+      <div class="container">
+        <h2 class="section-title">关于我们</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <p>建国大学中国留学生学生会成立于2002年，是由在建国大学就读的中国留学生自发组织的非营利性学生团体。</p>
+            <p>我们的宗旨是服务中国留学生，促进文化交流，帮助同学们更好地适应海外学习生活。</p>
+          </div>
+          <div class="about-image">
+            <img src="/images/UnionStructure.jpg" alt="组织架构">
+            <p>在任会员</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 近期活动 -->
+    <section id="events" class="section">
+      <div class="container">
+        <h2 class="section-title">近期活动</h2>
+        <div class="events-grid">
+          <div class="event-card">
+            <img src="/images/newMemember.jpg" alt="迎新活动">
+            <h3>新生欢迎会</h3>
+
+            <p>2025.03</p>
+            <p>帮助新生快速适应校园生活</p>
+          </div>
+          <div class="event-card">
+            <img src="/images/middleTest.jpg" alt="期中应援">
+            <h3>期中应援</h3>
+            <p>2025.04</p>
+            <p>加油打气</p>
+          </div>
+          <div class="event-card">
+            <img src="/images/mid_autumn_festival.jpg" alt="中秋晚会">
+            <h3>中秋晚会</h3>
+            <p>2024.10</p>
+            <p>共庆中秋晚会</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2026 建国大学中国留学生学生会 Created by 北极星.天赐</p>
+        <a href="https://github.com/beijixingtianci/beijixingtianci.github.io">前往网页github</a>
+      </div>
+    </footer>
+
+    <!-- 微信二维码模态框 -->
+    <div v-if="showContactModal" class="modal-overlay" @click="closeContactModal">
+      <div class="modal-container" @click.stop>
+        <button class="modal-close" @click="closeContactModal">&times;</button>
+        <h3>联系我们</h3>
+        <p>扫描下方二维码添加微信（作者）</p>
+        <img src="/images/QR.png" alt="微信二维码" class="qr-code">
+        <p class="wechat-id">微信号：<strong>A14949420167</strong></p>
+        <p class="note">（请备注“姓名，学科，可进新生群”）</p>
+      </div>
+    </div>
+    <NoticeFloating />
+  </div>
+</template>
+
+<script>
+import NoticeFloating from '../components/NoticeFloating.vue';
+import axios from 'axios';
+
+export default {
+  name: 'Union',
+
+  components: {
+    NoticeFloating
+  },
+
+  data() {
+    return {
+      menuOpen: false,    // 控制移动端菜单展开/收起
+      showContactModal: false,   // 定义一个布尔变量，控制弹窗显示或隐藏。
+
+      // 问答数据将从数据库加载，初始为空数组
+      qaCategories: [],
+      // 记录每个分类是否展开（初始化全部折叠）
+      expandedCategories: {},
+      // 记录每个分类下每个问题是否展开（二维，初始全部折叠）
+      expandedQuestions: {},
+
+      // 常用链接数据 
+      allLinks: [
+        { name: '建国大学官网', url: 'http://www.konkuk.ac.kr/' },
+        { name: '포털 (登录学校门户网站)', url: 'https://portal.konkuk.ac.kr' },
+        { name: '选课网站', url: 'https://sugang.konkuk.ac.kr/' },
+        { name: '宿舍官网', url: 'https://kulhouse.konkuk.ac.kr/home/index_01.asp' },
+        { name: '国际处', url: 'https://ciss.konkuk.ac.kr/ciss/index.do' },
+        { name: '向国际处老师提问（记得登录）', url: 'https://ciss.konkuk.ac.kr/ciss/18314/subview.do' },
+        { name: '提交TOPIK成绩(用学校邮箱登录)', url: 'https://forms.office.com/pages/responsepage.aspx?id=DuIC_fMPBUyY4sp8FbUDGzB3LTUgGSZFq84WY6TW1ZhURVU4OFlFRFhIOVFGTEoyMkRXVTRPWkVKMS4u&route=shorturl' },
+        { name: '出入境官网', url: 'https://www.hikorea.go.kr/Main.pt' },
+        { name: '工科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2281/subview.do' },
+        { name: '理科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2275/subview.do' },
+        { name: '国际大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/19211/subview.do' },
+        { name: '文科大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2266/subview.do' },
+        { name: '经营大学(院)官网', url: 'https://www.konkuk.ac.kr/konkuk/2299/subview.do' },
+      ]
+    }
+  },
+  async created() {
+    await this.fetchQAData();      // 1. 加载数据
+    this.initExpandState();        // 2. 初始化折叠状态（必须在数据加载后）
+  },
+  methods: {
+    async fetchQAData() {
+      try {
+        const response = await axios.get('https://my-personalweb-backend.onrender.com/api/qa');
+        const data = response.data;
+        const grouped = this.groupByCategory(data);
+        this.qaCategories = grouped;
+      } catch (err) {
+        console.error('加载问答数据失败:', err);
+        this.qaCategories = [];
+      }
+    },
+
+    groupByCategory(data) {
+      const map = new Map();
+      data.forEach(item => {
+        if (!map.has(item.category_id)) {
+          map.set(item.category_id, {
+            title: item.category_title,
+            questions: []
+          });
+        }
+        map.get(item.category_id).questions.push({
+          q: item.question,
+          a: item.answer
+        });
+      });
+      return Array.from(map.values());
+    },
+
+    initExpandState() {
+      // 直接赋值，不用 $set
+      this.qaCategories.forEach((_, idx) => {
+        this.expandedCategories[idx] = false;
+        this.expandedQuestions[idx] = {};
+        this.qaCategories[idx].questions.forEach((_, qidx) => {
+          this.expandedQuestions[idx][qidx] = false;
+        });
+      });
+    },
+    openContactModal() {
+      this.showContactModal = true;
+    },
+    closeContactModal() {
+      this.showContactModal = false;
+    },
+    scrollTo(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    },
+    toggleCategory(idx) {
+      this.expandedCategories[idx] = !this.expandedCategories[idx];
+    },
+    toggleQuestion(catIdx, qIdx) {
+      if (!this.expandedQuestions[catIdx]) {
+        this.expandedQuestions[catIdx] = {};
+      }
+      this.expandedQuestions[catIdx][qIdx] = !this.expandedQuestions[catIdx][qIdx];
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* scoped 让样式只作用于当前组件 */
+@import '@fortawesome/fontawesome-free/css/all.css';
+
+/* 全局样式 - 将 body 替换为 .union-page */
+.union-page {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Microsoft YaHei', Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.union-page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.btn {
+  display: inline-block;
+  background: #f1c40f;
+  color: #333;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #e67e22;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: #e74c3c;
+  margin: 1rem auto;
+}
+
+/* 导航栏 */
+header {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 0;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 80px;
+  margin-right: 15px;
+}
+
+.logo h1 {
+  font-size: 1.5rem;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 2rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #f1c40f;
+}
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.hero {
+  background: url('/images/logo.jpg') center/cover no-repeat;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: white;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.hero h2 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+/* 链接区 - 标签云样式 */
+.links-tags-section {
+  background: #f5f5f5;
+}
+
+.tag-cloud {
+  display: flex;
+  /*弹性布局：横向排列, 自动排版*/
+  flex-wrap: wrap;
+  /*允许换行*/
+  gap: 12px 20px;
+  /*标签之间的间距*/
+  justify-content: center;
+  /*居中对齐*/
+  align-items: baseline;
+  /*标签基线对齐，保持视觉整齐*/
+  max-width: 1000px;
+  margin: 0 auto;
+  /*水平居中容器*/
+}
+
+.tag {
+  background: white;
+  padding: 5px 14px;
+  border-radius: 30px;
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+  display: inline-block;
+  /*强制在同一行显示 让 <a>：可以设置 padding*/
+  white-space: nowrap;
+  /*防止标签文本换行，保持标签完整显示*/
+}
+
+.tag:hover {
+  background: #e74c3c;
+  color: white;
+  transform: scale(1.2);
+  /*放大效果*/
+  border-color: #e74c3c;
+}
+
+@media (max-width: 640px) {
+  .tag {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    white-space: normal;
+    /*允许标签文本换行，适应小屏幕*/
+  }
+
+  .tag-cloud {
+    gap: 10px 14px;
+  }
+}
+
+/* 问答区域样式 */
+.qa-section {
+  background: #f5f5f5;
+  /* 与页面背景保持一致 */
+}
+
+.qa-categories {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.qa-category {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: white;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.category-header:hover {
+  background: #fef6f2;
+}
+
+.category-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.category-content {
+  padding: 0.2rem 1rem 0.8rem;
+}
+
+.qa-item {
+  margin: 0.8rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.qa-item:last-child {
+  border-bottom: none;
+}
+
+.qa-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.8rem 0.5rem;
+}
+
+.qa-question:hover {
+  background: #fafafa;
+}
+
+.qa-question strong {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.toggle-icon-small {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-left: 1rem;
+}
+
+.qa-answer {
+  padding: 0.2rem 0.5rem 1rem 1.5rem;
+  color: #555;
+  line-height: 1.6;
+  border-left: 2px solid #f1c40f;
+  margin: 0.2rem 0 0.5rem;
+  white-space: pre-wrap;
+  /* 保持文本格式，支持多行显示 */
+}
+
+.qa-answer p {
+  margin: 0;
+}
+
+
+/* 关于我们 */
+.about-content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.about-text {
+  flex: 1;
+}
+
+.about-text p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.about-image {
+  flex: 1;
+  max-width: 300px;
+}
+
+.about-image img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: block;
+  /* 确保块级，垂直排列 */
+  margin-bottom: 1rem;
+  /* 图片之间间隔 */
+}
+
+.about-image p {
+  text-align: center;
+}
+
+/* 活动部分 */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.event-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-10px);
+}
+
+.event-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.event-card h3 {
+  padding: 1rem;
+  color: #2c3e50;
+}
+
+.event-card p {
+  padding: 0 1rem 1rem;
+  color: #7f8c8d;
+}
+
+/* 服务部分（保留原样，以备后用） */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.service-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+}
+
+.service-card i {
+  font-size: 3rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.service-card h3 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+/* 联系我们（保留原样） */
+.contact-content {
+  display: flex;
+  gap: 3rem;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-info h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.contact-info p {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.contact-info i {
+  margin-right: 1rem;
+  color: #e74c3c;
+}
+
+.social-media {
+  margin-top: 2rem;
+}
+
+.social-media a {
+  display: inline-block;
+  margin-right: 1rem;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.social-media a:hover {
+  color: #e74c3c;
+}
+
+.contact-form {
+  flex: 1;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.contact-form textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+/* 页脚 */
+.union-page footer {
+  background: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+footer p {
+  font-size: 20px;
+}
+
+footer a {
+  color: #f1c40f;
+  font-weight: bold;
+}
+
+footer a:hover {
+  color: #e67e22;
+}
+
+/* 模态框遮罩层 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 模态框内容容器 */
+.modal-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.3s ease;
+  /* 弹窗出现时的淡入+上移动画，让体验更平滑 */
+}
+
+/* 关闭按钮 绝对定位在卡片右上角 */
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #e74c3c;
+}
+
+/* 二维码图片 */
+.qr-code {
+  max-width: 400px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  margin: 1rem auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+  /* 保证图片完整显示不变形 */
+}
+
+/* 微信号文字 */
+.wechat-id {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.note {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-top: 0.5rem;
+}
+
+/* 淡入动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  nav {
+    position: relative;
+  }
+
+  /* 菜单：从右侧滑出，紧贴导航栏底部 */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    /* 紧贴 nav 底部 */
+    right: 0;
+    width: 220px;
+    background: #c0392b;
+    flex-direction: column;
+    padding: 0.5rem 0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 0 0 12px 12px;
+    z-index: 99;
+    list-style: none;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-links li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 14px 24px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  .nav-links a:last-child {
+    border-bottom: none;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  /* 英雄区缩小高度 */
+  .hero {
+    height: 360px;
+  }
+
+  .hero h2 {
+    font-size: 2rem;
+    padding: 0 10px;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  /* 各区块减少内边距 */
+  .section {
+    padding: 3rem 0;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* 关于我们纵向堆叠，图片居中 */
+  .about-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-image {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  /* 活动卡片更灵活的网格 */
+  .events-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* 页脚文字缩小 */
+  .union-page footer p {
+    font-size: 16px;
+  }
+
+  /* 弹窗优化 */
+  .modal-container {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .qr-code {
+    max-width: 100%;
+    max-height: 300px;
+  }
+}
+
+/* ========== 小手机进一步优化 (≤480px) ========== */
+@media (max-width: 480px) {
+  .hero {
+    height: 300px;
+  }
+
+  .hero h2 {
+    font-size: 1.75rem;
+  }
+
+  .hero p {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    padding: 0.7rem 1.8rem;
+    font-size: 0.95rem;
+  }
+
+  /* 问答触摸优化 */
+  .category-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .category-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .qa-question {
+    padding: 0.9rem 0.5rem;
+  }
+
+  .qa-question strong {
+    font-size: 0.95rem;
+  }
+
+  /* 活动卡片强制单列，更稳 */
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-card img {
+    height: 180px;
+  }
+
+  /* 关于我们图片再缩小一点 */
+  .about-image {
+    max-width: 240px;
+  }
+
+  .about-text p {
+    font-size: 0.95rem;
+  }
+
+  /* 弹窗宽度更灵活 */
+  .modal-container {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}
+</style>
