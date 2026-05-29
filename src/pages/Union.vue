@@ -12,11 +12,11 @@
 
           <ul class="nav-links" :class="{ active: menuOpen }">
             <li><router-link to="/">作者首页</router-link></li>
-            <li><a href="javascript:void(0)" @click.prevent="scrollTo('links')">链接区</a></li>
-            <li><a href="javascript:void(0)" @click.prevent="scrollTo('qa')">常见问题</a></li>
-            <li><a href="javascript:void(0)" @click.prevent="scrollTo('about')">关于我们</a></li>
-            <li><a href="javascript:void(0)" @click.prevent="scrollTo('events')">活动</a></li>
-            <li><a href="javascript:void(0)" @click="openContactModal">联系我们</a></li>
+            <li><a href="#" @click.prevent="scrollTo('links')">链接区</a></li>
+            <li><a href="#" @click.prevent="scrollTo('qa')">常见问题</a></li>
+            <li><a href="#" @click.prevent="scrollTo('about')">关于我们</a></li>
+            <li><a href="#" @click.prevent="scrollTo('events')">活动</a></li>
+            <li><a href="#" @click.prevent="openContactModal">联系我们</a></li>
           </ul>
 
           <div class="hamburger" @click="menuOpen = !menuOpen">
@@ -54,24 +54,32 @@
     <section id="qa" class="section qa-section">
       <div class="container">
         <h2 class="section-title">常见问答</h2>
-        <div class="qa-categories">
-          <!-- 循环每个分类 -->
+
+        <!-- 加载中 -->
+        <div v-if="qaStatus === 'loading'" class="qa-status">
+          <div class="qa-spinner"></div>
+          <p>正在加载数据...</p>
+        </div>
+
+        <!-- 加载失败 -->
+        <div v-else-if="qaStatus === 'error'" class="qa-status">
+          <p class="qa-error-text">数据加载失败，请稍后重试</p>
+          <button class="qa-retry-btn" @click="fetchQAData(); initExpandState()">重新加载</button>
+        </div>
+
+        <!-- 加载成功 -->
+        <div v-else class="qa-categories">
           <div v-for="(category, idx) in qaCategories" :key="idx" class="qa-category">
-            <!-- 分类标题，点击切换该分类的展开/收起 -->
             <div class="category-header" @click="toggleCategory(idx)">
               <h3>{{ category.title }}</h3>
               <span class="toggle-icon">{{ expandedCategories[idx] ? '-' : '+' }}</span>
             </div>
-            <!-- 分类内容，根据 expandedCategories[idx] 决定是否显示 -->
             <div class="category-content" v-show="expandedCategories[idx]">
-              <!-- 循环该分类下的每个问题 -->
               <div v-for="(item, qidx) in category.questions" :key="qidx" class="qa-item">
-                <!-- 问题行，点击切换该问题的展开/收起 -->
                 <div class="qa-question" @click="toggleQuestion(idx, qidx)">
                   <strong>问: {{ item.q }}</strong>
                   <span class="toggle-icon-small">{{ expandedQuestions[idx]?.[qidx] ? '-' : '+' }}</span>
                 </div>
-                <!-- 答案，根据 expandedQuestions[idx][qidx] 决定是否显示 -->
                 <div class="qa-answer" v-show="expandedQuestions[idx]?.[qidx]">
                   <p>答: {{ item.a }}</p>
                 </div>
@@ -160,6 +168,8 @@ const showContactModal = ref(false)
 
 // 问答数据
 const qaCategories = ref([])
+// 三个值：'loading' | 'success' | 'error'
+const qaStatus = ref('loading')  
 // 折叠状态用 reactive，因为 key 是动态的
 const expandedCategories = reactive({})
 const expandedQuestions = reactive({})
@@ -182,15 +192,17 @@ const allLinks = [
 ]
 
 // ==================== 方法 ====================
-
 async function fetchQAData() {
+  qaStatus.value = 'loading'
   try {
     const response = await axios.get('https://my-personalweb-backend.onrender.com/api/qa')
     const data = response.data
     qaCategories.value = groupByCategory(data)
+    qaStatus.value = 'success'
   } catch (err) {
     console.error('加载问答数据失败:', err)
     qaCategories.value = []
+    qaStatus.value = 'error'
   }
 }
 
@@ -329,7 +341,6 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 1rem 0;
 }
 
 nav {
@@ -470,6 +481,47 @@ nav {
   .tag-cloud {
     gap: 10px 14px;
   }
+}
+
+/* 问答加载/错误状态 */
+.qa-status {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.qa-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #e74c3c;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.qa-error-text {
+  color: #e74c3c;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.qa-retry-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.qa-retry-btn:hover {
+  background: #c0392b;
 }
 
 /* 问答区域样式 */

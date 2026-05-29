@@ -6,7 +6,7 @@
       <div class="nav-links" :class="{ open: isOpen }">
         <router-link to="/" exact-active-class="active">首页</router-link>
         <router-link to="/projects" active-class="active">项目</router-link>
-        <a href="javascript:void(0)" @click="openQrModal" :class="{ active: $route.name === 'contact' }">联系作者</a>
+        <a href="#" @click.prevent="openQrModal" :class="{ active: $route.name === 'contact' }">联系作者</a>
       </div>
 
       <div class="menu-btn" @click="toggleMenu">☰</div>
@@ -28,7 +28,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// 路由变化时自动关闭模态框
+watch(() => route.path, () => {
+  showQrModal.value = false
+  isOpen.value = false
+  document.body.style.overflow = ''
+})
 
 const isOpen = ref(false)
 const showQrModal = ref(false)

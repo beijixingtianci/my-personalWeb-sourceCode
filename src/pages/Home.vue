@@ -156,12 +156,24 @@ onBeforeUnmount(() => {
 .home {
   position: relative;
   width: 100%;
-  min-height: 100vh;
   min-height: 100dvh;
   background-image: url('/images/background.jpg');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+}
+
+/* 桌面端：保持视差效果 */
+@media (min-width: 769px) {
+  .home {
+    background-attachment: fixed;
+  }
+}
+
+/* 移动端：改为滚动，提升性能 */
+@media (max-width: 768px) {
+  .home {
+    background-attachment: scroll;
+  }
 }
 
 .content {

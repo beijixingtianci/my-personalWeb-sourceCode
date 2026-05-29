@@ -185,12 +185,24 @@ function openLink(url) {
 .projects-page {
   position: relative;
   min-height: 100vh;
-  background: transparent;  /* 让粒子背景显现 */
   overflow-x: hidden;
   background-image: url('/images/background.jpg');  /* 背景图片路径 */
   background-size: cover;   /* 背景图片覆盖整个屏幕 */
   background-position: center;    /* 背景图片居中 */
-  background-attachment: fixed;   /* 背景图片固定在视口 */
+}
+
+/* 桌面端：保持视差效果 */
+@media (min-width: 769px) {
+  .projects-page {
+    background-attachment: fixed;
+  }
+}
+
+/* 移动端：改为滚动，提升性能 */
+@media (max-width: 768px) {
+  .projects-page {
+    background-attachment: scroll;
+  }
 }
 
 .canvas-bg {
