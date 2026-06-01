@@ -44,6 +44,9 @@
         </div>
       </div>
 
+      <!-- 音乐播放器 -->
+      <!-- <MusicPlayer /> -->
+
       <!-- 链接区 -->
       <p class="link-title">链接区</p>
       <div class="links">
@@ -55,8 +58,6 @@
         </router-link>
       </div>
 
-      
- 
 
     </div>
   </div>
@@ -71,7 +72,7 @@
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import UseParticles from '../components/useParticles.vue'
-
+import MusicPlayer from '../components/MusicPlayer.vue'
 
 // ==================== 时区与系统运行时间 ====================
 /** 北京时间 (UTC+8) */
