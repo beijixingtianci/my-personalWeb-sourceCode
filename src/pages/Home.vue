@@ -45,7 +45,7 @@
       </div>
 
       <!-- 音乐播放器 -->
-      <!-- <MusicPlayer /> -->
+      <MusicPlayer />
 
       <!-- 链接区 -->
       <p class="link-title">链接区</p>
