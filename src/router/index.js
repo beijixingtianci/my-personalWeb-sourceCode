@@ -5,6 +5,7 @@ import Projects from '../pages/Projects.vue'
 import Contact from '../pages/Contact.vue'
 import Union from '../pages/Union.vue'
 import NotFound from '../pages/NotFound.vue'
+import Resume from '../pages/Resume.vue'
 
 const routes = [
   { path: '/', 
@@ -28,6 +29,15 @@ const routes = [
     name:'contact',
     meta:{
       title:'联系作者',
+      icon: '/Main.jpg'
+    }
+  },
+  {
+    path: '/resume', 
+    component: Resume,
+    name:'resume',
+    meta:{
+      title:'个人简历 - 北极星.天赐',
       icon: '/Main.jpg'
     }
   },

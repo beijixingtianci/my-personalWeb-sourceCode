@@ -11,7 +11,7 @@
 import { ref } from 'vue'
 
 const visible = ref(true)
-const message = '网站为个人练习，会不定期更新。\n如有bug或建议，请联系我'
+const message = '网站为个人练习，会不定期更新。\n如有bug或建议，请联系我 \n加载时需要几秒钟，请耐心等待~'
 
 function closeNotice() {
   visible.value = false

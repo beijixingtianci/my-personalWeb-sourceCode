@@ -3,6 +3,24 @@
     <!-- 粒子动画背景 Canvas -->
     <use-particles />
 
+    <!-- 作业通知弹窗（临时，检查完后删除此弹窗即可） -->
+    <div v-if="showNotice" class="notice-overlay" @click="closeNotice">
+      <div class="notice-container" @click.stop>
+        <button class="notice-close" @click="closeNotice">&times;</button>
+        <div class="notice-icon"><i class="fas fa-file-alt"></i></div>
+        <h2 class="notice-title">Assignment for INTRODUCTION TO COMPUTER ENGINEERING</h2>
+        <p class="notice-text">Welcome to access my personal website!<br>Here is my course assignment — a website created using AI tools, including my personal resume page.</p>
+        <div class="notice-actions">
+          <router-link to="/resume" class="notice-btn-primary">
+            <i class="fas fa-user-tie"></i> look at my resume part for homework →
+          </router-link>
+          <button class="notice-btn-secondary" @click="closeNotice">
+            Continue Browsing
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 页面内容层 -->
     <div class="content">
 
@@ -22,7 +40,7 @@
       </div>
      </div>
 
-      <!-- 个人信息卡片 -->
+       <!-- 个人信息卡片 -->
       <div class="profile-card">
         <!-- 左侧: 头像区域 -->
         <div class="profile-left">
@@ -43,6 +61,9 @@
           </p>
         </div>
       </div>
+
+      <!-- AI 对话卡片 -->
+      <AiChat />
 
       <!-- 音乐播放器 -->
       <MusicPlayer />
@@ -73,6 +94,15 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import UseParticles from '../components/useParticles.vue'
 import MusicPlayer from '../components/MusicPlayer.vue'
+import AiChat from '../components/AiChat.vue'
+
+// ==================== 作业通知弹窗（临时，检查完后删除） ====================
+const showNotice = ref(true)
+
+function closeNotice() {
+  showNotice.value = false
+  document.body.style.overflow = ''
+}
 
 // ==================== 时区与系统运行时间 ====================
 /** 北京时间 (UTC+8) */
@@ -129,6 +159,9 @@ onMounted(() => {
   runTimer = setInterval(updateRunTime, 60000)
 
   console.log('Home 组件已挂载,时区及运行时间计时器已启动')
+
+   // 弹窗显示时禁止背景滚动,作业
+  document.body.style.overflow = 'hidden'
 })
 
 onBeforeUnmount(() => {
@@ -147,6 +180,110 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+/* ==================== 作业通知弹窗（临时，检查完后删除） ==================== */
+
+.notice-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.notice-container {
+  background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95));
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 440px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  border: 1px solid rgba(161,242,234,0.3);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(161,242,234,0.1);
+  animation: slideUp 0.4s ease;
+}
+
+.notice-close {
+  position: absolute;
+  top: 12px; right: 16px;
+  background: none; border: none;
+  font-size: 24px; cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  transition: color 0.2s;
+}
+.notice-close:hover { color: #e74c3c; }
+
+.notice-icon {
+  width: 64px; height: 64px;
+  margin: 0 auto 1.2rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; color: white;
+  box-shadow: 0 8px 24px rgba(102,126,234,0.4);
+}
+
+.notice-title {
+  color: white; font-size: 1.5rem;
+  margin: 0 0 0.8rem; font-weight: 700;
+}
+
+.notice-text {
+  color: #cbd5e1; font-size: 0.95rem;
+  line-height: 1.7; margin: 0 0 1.5rem;
+}
+
+.notice-actions {
+  display: flex; flex-direction: column; gap: 0.8rem;
+}
+
+.notice-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.5rem;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 40px; text-decoration: none;
+  color: white; font-weight: 600; font-size: 1rem;
+  border: none; cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+}
+.notice-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102,126,234,0.6);
+}
+
+.notice-btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 24px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 40px;
+  color: #a1f2ea; font-weight: 500; font-size: 0.9rem;
+  border: 1px solid rgba(161,242,234,0.2);
+  cursor: pointer; transition: all 0.3s ease;
+}
+.notice-btn-secondary:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(161,242,234,0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
 :global(html),
 :global(body) {
   margin: 0;

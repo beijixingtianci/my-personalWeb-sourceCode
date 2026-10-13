@@ -90,6 +90,18 @@
       </div>
     </section>
 
+    <!-- ✅ 新增：AI 助手 -->
+    <section id="ai-chat" class="section">
+      <div class="container">
+        <h2 class="section-title">智能鹅秘书</h2>
+        <div style="display:flex; justify-content:center;">
+          <AiChat source="student" primaryColor="#e74c3c" botName="AI 鹅秘书" botAvatar="/images/xiaomishu.jpg"
+            userAvatar="🎓" />
+        </div>
+      </div>
+    </section>
+
+
     <!-- 关于我们 -->
     <section id="about" class="section">
       <div class="container">
@@ -162,6 +174,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import NoticeFloating from '../components/NoticeFloating.vue'
 import axios from 'axios'
+import AiChat from '../components/AiChat.vue'
 
 const menuOpen = ref(false)
 const showContactModal = ref(false)
@@ -169,7 +182,7 @@ const showContactModal = ref(false)
 // 问答数据
 const qaCategories = ref([])
 // 三个值：'loading' | 'success' | 'error'
-const qaStatus = ref('loading')  
+const qaStatus = ref('loading')
 // 折叠状态用 reactive，因为 key 是动态的
 const expandedCategories = reactive({})
 const expandedQuestions = reactive({})
@@ -282,12 +295,6 @@ onMounted(async () => {
   line-height: 1.6;
 }
 
-.union-page * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .container {
   width: 90%;
   max-width: 1200px;
@@ -336,7 +343,7 @@ onMounted(async () => {
 header {
   background: linear-gradient(135deg, #e74c3c, #c0392b);
   color: white;
-  padding: 1rem 0;
+  padding: 0.6rem 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -355,12 +362,12 @@ nav {
 }
 
 .logo img {
-  height: 80px;
+  height: 60px;
   margin-right: 15px;
 }
 
 .logo h1 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
 }
 
 .nav-links {
@@ -500,7 +507,9 @@ nav {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .qa-error-text {
