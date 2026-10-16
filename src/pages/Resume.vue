@@ -197,7 +197,7 @@
  * 功能: 个人简历 / 自我介绍页面（作业临时页面）
  * 技术: Vue 3 Composition API
  */
-import UseParticles from '../components/useParticles.vue'
+import UseParticles from '../components/UseParticles.vue'
 </script>
 
 <style scoped>

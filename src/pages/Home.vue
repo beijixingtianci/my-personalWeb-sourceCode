@@ -92,7 +92,7 @@
  */
 
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import UseParticles from '../components/useParticles.vue'
+import UseParticles from '../components/UseParticles.vue'
 import MusicPlayer from '../components/MusicPlayer.vue'
 import AiChat from '../components/AiChat.vue'
 
