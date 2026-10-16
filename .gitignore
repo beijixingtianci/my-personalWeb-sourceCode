@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+# 冗余的临时文件（AiChat.vue 的旧副本，扩展名写错了）
+*.txft
 *.local
 
 # Editor directories and files

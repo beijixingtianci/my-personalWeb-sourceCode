@@ -1,0 +1,43 @@
+name: Deploy to GitHub Pages
+
+# 触发条件：只要有人 push 到 main 分支，就自动跑这条流水线
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 把源码仓库的代码拉到 GitHub 的服务器上
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. 装 Node.js（版本固定 20，稳定不出错）
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. 安装依赖（用 npm ci，严格按照 package-lock.json 装，结果可复现）
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. 打包，生成 dist 成品目录
+      - name: Build
+        run: npm run build
+
+      # 5. 用你的 DEPLOY_TOKEN 把 dist 推送到部署仓库，GitHub Pages 会自动上线
+      - name: Deploy to beijixingtianci.github.io
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.DEPLOY_TOKEN }}
+          external_repository: beijixingtianci/beijixingtianci.github.io
+          publish_dir: ./dist
+          publish_branch: main
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
