@@ -10,12 +10,21 @@
 <script setup>
 import { ref } from 'vue'
 
-const visible = ref(true)
+const visible = ref(localStorage.getItem('noticeClosed') !== getToday())
 const message = '网站为个人练习，会不定期更新。\n如有bug或建议，请联系我 \n加载时需要几秒钟，请耐心等待~'
 
+function getToday(){
+  const year = new Date().getFullYear()
+  const month = new Date().getMonth() + 1
+  const day = new Date().getDate()
+
+  return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
+}
 function closeNotice() {
   visible.value = false
-}
+  localStorage.setItem('noticeClosed', getToday())
+} 
+
 </script>
 
 <style scoped>
