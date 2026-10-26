@@ -15,7 +15,7 @@
             <i class="fas fa-user-tie"></i> look at my resume part for homework →
           </router-link>
           <button class="notice-btn-secondary" @click="closeNotice">
-            Continue Browsing
+            Continue Browsing and not show this notice again
           </button>
         </div>
       </div>
@@ -96,12 +96,20 @@ import UseParticles from '../components/UseParticles.vue'
 import MusicPlayer from '../components/MusicPlayer.vue'
 import AiChat from '../components/AiChat.vue'
 
-// ==================== 作业通知弹窗（临时，检查完后删除） ====================
-const showNotice = ref(true)
+// ==================== 作业通知弹窗（临时，暂时不用） ====================
+//const showNotice = ref(localStorage.getItem('homeNoticeClosed') !== getToday())
+const showNotice = ref(false) // 默认不显示弹窗
 
+function getToday(){
+  const year = new Date().getFullYear()
+  const month = new Date().getMonth() + 1
+  const day = new Date().getDate()
+
+  return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
+}
 function closeNotice() {
   showNotice.value = false
-  document.body.style.overflow = ''
+  localStorage.setItem('homeNoticeClosed', getToday())
 }
 
 // ==================== 时区与系统运行时间 ====================
@@ -161,7 +169,7 @@ onMounted(() => {
   console.log('Home 组件已挂载,时区及运行时间计时器已启动')
 
    // 弹窗显示时禁止背景滚动,作业
-  document.body.style.overflow = 'hidden'
+  // document.body.style.overflow = 'hidden'
 })
 
 onBeforeUnmount(() => {
