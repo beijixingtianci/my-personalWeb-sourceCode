@@ -7,6 +7,7 @@
         <router-link to="/" exact-active-class="active">首页</router-link>
         <router-link to="/resume" active-class="active">Resume</router-link>
         <router-link to="/projects" active-class="active">项目</router-link>
+        <router-link to="/blog" active-class="active">个人博客</router-link>
         <a href="#" @click.prevent="openQrModal" :class="{ active: $route.name === 'contact' }">联系作者</a>
       </div>
 

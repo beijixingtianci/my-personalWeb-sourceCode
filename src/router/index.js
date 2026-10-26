@@ -6,6 +6,8 @@ import Contact from '../pages/Contact.vue'
 import Union from '../pages/Union.vue'
 import NotFound from '../pages/NotFound.vue'
 import Resume from '../pages/Resume.vue'
+import BlogList from '../pages/BlogList.vue'
+import BlogPost from '../pages/BlogPost.vue'
 
 const routes = [
   { path: '/', 
@@ -47,6 +49,24 @@ const routes = [
     meta:{
       title:'建国大学中国留学生学生会官网',
       icon: 'Union.jpg'
+    }
+  },
+  {
+    path: '/blog',
+    component: BlogList,
+    name: 'blog',
+    meta:{
+      title:'博客列表',
+      icon: '/Main.jpg'
+    }
+  },
+  {
+    path: '/blog/:id',
+    component: BlogPost,
+    name: 'blogPost',
+    meta:{
+      title: '博客文章',
+      icon: '/Main.jpg'
     }
   },
   {
