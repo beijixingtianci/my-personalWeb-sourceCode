@@ -12,7 +12,8 @@
       </div>
 
 
-      <div class="post-content">{{ post.content }}</div>
+      <component v-if="postComp" :is="postComp" :embedded="true" />
+      <div v-else class="post-content">{{ post.content }}</div>
     </div>
   </div>
 
@@ -25,7 +26,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent, markRaw } from 'vue'
 import { useRoute } from 'vue-router'
 import { posts } from '../data/posts'
 import UseParticles from '../components/UseParticles.vue'
@@ -35,6 +36,15 @@ const route = useRoute()
 const post = computed(() => {
   const id = Number(route.params.id)
   return posts.find(p => p.id === id)
+})
+
+// 交互式文章组件（Vite 懒加载：posts.js 里 component 写组件名即可）
+const articleModules = import.meta.glob('./articles/*.vue')
+const postComp = computed(() => {
+  const name = post.value?.component
+  if (!name) return null
+  const loader = articleModules[`./articles/${name}.vue`]
+  return loader ? markRaw(defineAsyncComponent(loader)) : null
 })
 </script>
 
@@ -46,10 +56,23 @@ const post = computed(() => {
   min-height: 100vh;
   box-sizing: border-box;
   padding: 100px 20px 40px;
-  background-image: url('/images/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background: linear-gradient(180deg, #0a0e22 0%, #0c1130 45%, #0a0e22 100%);
+}
+
+/* 方案 B：照片只留顶部一段，向下渐隐成纯色，不挡正文 */
+.post-page::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 340px;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/images/background.jpg') center 30% / cover no-repeat;
+  filter: brightness(0.55) saturate(0.8);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
 }
 
 .post-inner {

@@ -1,17 +1,11 @@
-export const posts = [{
-    id: 1,
-    title: 'My First Post',
-    date: '2026-10-26',
-    tags:['日常'],
-    cover:'',
-    content: 'This is the content of my first post.',
-},
+export const posts = [
 {
-    id: 2,
-    title: '今天修好了数据库',
-    date: '2026-10-10',
-    tags: ['技术', '踩坑'],
-    cover: '',
-    content: '记录一下排查过程……'
+    id: 1,
+    title: '动态规划（DP）入门：从斐波那契说起',
+    date: '2026-11-01',
+    tags: ['算法', 'DP'],
+    cover: '/images/Blog_dp.png',
+    component: 'DpIntro',
+    content: '用斐波那契一次讲透动态规划：备忘录比喻、DP 两特征、三种写法对比、递归树可视化。'
 }
 ]
