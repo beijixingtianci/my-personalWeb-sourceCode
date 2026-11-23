@@ -77,6 +77,9 @@
         <router-link to="/projects" class="btn">
           <i class="fas fa-laptop-code"></i> 看看我做的东西 →
         </router-link>
+        <router-link to="/convert" class="btn">
+          <i class="fas fa-file-contract"></i> 文件转换工具 →
+        </router-link>
       </div>
 
 

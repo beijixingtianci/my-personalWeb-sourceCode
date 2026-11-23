@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory  } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 import Home from '../pages/Home.vue'
 import Projects from '../pages/Projects.vue'
@@ -8,46 +8,52 @@ import NotFound from '../pages/NotFound.vue'
 import Resume from '../pages/Resume.vue'
 import BlogList from '../pages/BlogList.vue'
 import BlogPost from '../pages/BlogPost.vue'
+import Convert from '../pages/Convert.vue'
+
 
 const routes = [
-  { path: '/', 
+  {
+    path: '/',
     component: Home,
-    name:'home',
-    meta:{
+    name: 'home',
+    meta: {
       title: '个人主页 - 首页',
       icon: '/Main.jpg'
     }
   },
-  { path: '/projects', 
+  {
+    path: '/projects',
     component: Projects,
-    name:'projects',
-    meta:{
-      title:'我的项目',
-      icon: '/Main.jpg'
-    }
-  },
-  { path: '/contact', 
-    component: Contact ,
-    name:'contact',
-    meta:{
-      title:'联系作者',
+    name: 'projects',
+    meta: {
+      title: '我的项目',
       icon: '/Main.jpg'
     }
   },
   {
-    path: '/resume', 
-    component: Resume,
-    name:'resume',
-    meta:{
-      title:'个人简历 - 北极星.天赐',
+    path: '/contact',
+    component: Contact,
+    name: 'contact',
+    meta: {
+      title: '联系作者',
       icon: '/Main.jpg'
     }
   },
-  { path: '/union', 
+  {
+    path: '/resume',
+    component: Resume,
+    name: 'resume',
+    meta: {
+      title: '个人简历 - 北极星.天赐',
+      icon: '/Main.jpg'
+    }
+  },
+  {
+    path: '/union',
     component: Union,
-    name:'union',
-    meta:{
-      title:'建国大学中国留学生学生会官网',
+    name: 'union',
+    meta: {
+      title: '建国大学中国留学生学生会官网',
       icon: 'Union.jpg'
     }
   },
@@ -55,8 +61,8 @@ const routes = [
     path: '/blog',
     component: BlogList,
     name: 'blog',
-    meta:{
-      title:'博客列表',
+    meta: {
+      title: '博客列表',
       icon: '/Main.jpg'
     }
   },
@@ -64,8 +70,17 @@ const routes = [
     path: '/blog/:id',
     component: BlogPost,
     name: 'blogPost',
-    meta:{
+    meta: {
       title: '博客文章',
+      icon: '/Main.jpg'
+    }
+  },
+  {
+    path: '/convert',
+    component: Convert,
+    name: 'convert',
+    meta: {
+      title: '文件转换 - 北极星.天赐',
       icon: '/Main.jpg'
     }
   },
